@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL") // Your MongoDB connection string
+}
+
+model Event {
+  id            String    @id @default(cuid()) @map("_id") // MongoDB uses "_id" by default
+  title         String
+  startTime     String
+  endTime       String
+  date          String
+  color         String
+  description   String?
+  location      String?
+  attendees     String[]
+  organizer     String
+  isCompleted   Boolean   @default(false)
+  tags          String[]
+  githubRepo    String?
+  codeLanguage  String?
+  priority      String?
+  reminderTime  Int?
+  notificationSent Boolean @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}

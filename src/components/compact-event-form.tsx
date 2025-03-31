@@ -4,12 +4,11 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import type { Event } from "@/lib/models"
-import { X, AlertCircle, Clock, Calendar, Code } from "lucide-react"
+import { AlertCircle, Clock, Calendar } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { isDateInPast } from "@/lib/utils"
 
@@ -32,8 +31,6 @@ const colorOptions = [
   { value: "bg-red-500", label: "Red" },
 ]
 
-const codeLanguages = ["JavaScript", "TypeScript", "Python", "Java", "C#", "PHP", "Go", "Ruby", "Rust", "Swift"]
-
 export default function CompactEventForm({ event, onSubmit, onCancel, onDelete }: CompactEventFormProps) {
   const [formData, setFormData] = useState<Event>({
     title: "",
@@ -42,15 +39,10 @@ export default function CompactEventForm({ event, onSubmit, onCancel, onDelete }
     date: "",
     color: "bg-blue-500",
     description: "",
-    location: "",
-    attendees: [],
-    organizer: "You",
-    tags: [],
     priority: "medium",
     reminderTime: 15,
   })
 
-  const [tagInput, setTagInput] = useState("")
   const [formError, setFormError] = useState("")
   const [activeTab, setActiveTab] = useState("basic")
 
@@ -89,26 +81,13 @@ export default function CompactEventForm({ event, onSubmit, onCancel, onDelete }
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const addTag = () => {
-    if (tagInput.trim() && !formData.tags?.includes(tagInput.trim())) {
-      setFormData((prev) => ({
-        ...prev,
-        tags: [...(prev.tags || []), tagInput.trim()],
-      }))
-      setTagInput("")
-    }
-  }
-
-  const removeTag = (tag: string) => {
+  const handleSelectChange = <K extends keyof Event>(name: K, value: Event[K]) => {
     setFormData((prev) => ({
       ...prev,
-      tags: prev.tags?.filter((t) => t !== tag),
-    }))
-  }
+      [name]: value,
+    }));
+  };
+  
 
   const validateForm = () => {
     if (!formData.title) {
@@ -165,9 +144,8 @@ export default function CompactEventForm({ event, onSubmit, onCancel, onDelete }
       )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-3 mb-4">
+        <TabsList className="grid grid-cols-2 mb-4">
           <TabsTrigger value="basic">Basic</TabsTrigger>
-          <TabsTrigger value="dev">Dev Info</TabsTrigger>
           <TabsTrigger value="details">Details</TabsTrigger>
         </TabsList>
 
@@ -249,64 +227,7 @@ export default function CompactEventForm({ event, onSubmit, onCancel, onDelete }
           </div>
         </TabsContent>
 
-        <TabsContent value="dev" className="space-y-4">
-          <div>
-            <label className="block mb-1 text-sm">GitHub Repository</label>
-            <div className="relative">
-              <Input
-                name="githubRepo"
-                value={formData.githubRepo || ""}
-                onChange={handleChange}
-                className="bg-background/10 border-border text-foreground pl-10"
-                placeholder="username/repository"
-              />
-              <Code className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground/70 h-4 w-4" />
-            </div>
-          </div>
-
-          <div>
-            <label className="block mb-1 text-sm">Programming Language</label>
-            <Select
-              value={formData.codeLanguage || ""}
-              onValueChange={(value) => handleSelectChange("codeLanguage", value)}
-            >
-              <SelectTrigger className="bg-background/10 border-border text-foreground">
-                <SelectValue placeholder="Select language" />
-              </SelectTrigger>
-              <SelectContent>
-                {codeLanguages.map((lang) => (
-                  <SelectItem key={lang} value={lang}>
-                    {lang}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <label className="block mb-1 text-sm">Tags</label>
-            <div className="flex gap-2">
-              <Input
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                className="bg-background/10 border-border text-foreground flex-grow"
-                placeholder="Add tag"
-                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
-              />
-              <Button type="button" size="sm" onClick={addTag}>
-                Add
-              </Button>
-            </div>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {formData.tags?.map((tag, index) => (
-                <Badge key={index} variant="outline" className="flex items-center gap-1">
-                  {tag}
-                  <X className="h-3 w-3 cursor-pointer" onClick={() => removeTag(tag)} />
-                </Badge>
-              ))}
-            </div>
-          </div>
-
+        <TabsContent value="details" className="space-y-4">
           <div>
             <label className="block mb-1 text-sm">Priority</label>
             <Select
@@ -323,37 +244,41 @@ export default function CompactEventForm({ event, onSubmit, onCancel, onDelete }
               </SelectContent>
             </Select>
           </div>
-        </TabsContent>
-
-        <TabsContent value="details" className="space-y-4">
-          <div>
-            <label className="block mb-1 text-sm">Location</label>
-            <Input
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              className="bg-background/10 border-border text-foreground"
-              placeholder="Location"
-            />
-          </div>
 
           <div>
             <label className="block mb-1 text-sm">Reminder (minutes before)</label>
             <Select
-              value={String(formData.reminderTime || 15)}
-              onValueChange={(value) => handleSelectChange("reminderTime", value)}
-            >
-              <SelectTrigger className="bg-background/10 border-border text-foreground">
-                <SelectValue placeholder="Select time" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="5">5 minutes</SelectItem>
-                <SelectItem value="10">10 minutes</SelectItem>
-                <SelectItem value="15">15 minutes</SelectItem>
-                <SelectItem value="30">30 minutes</SelectItem>
-                <SelectItem value="60">1 hour</SelectItem>
-              </SelectContent>
-            </Select>
+  value={String(formData.reminderTime || 15)} // Ensures it's a string
+  onValueChange={(value) => handleSelectChange("reminderTime", Number(value))} // Converts to number
+>
+  <SelectTrigger className="bg-background/10 border-border text-foreground">
+    <SelectValue placeholder="Select time" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="5">5 minutes</SelectItem>
+    <SelectItem value="10">10 minutes</SelectItem>
+    <SelectItem value="15">15 minutes</SelectItem>
+    <SelectItem value="30">30 minutes</SelectItem>
+    <SelectItem value="60">1 hour</SelectItem>
+  </SelectContent>
+</Select>
+
+          </div>
+
+          <div>
+            <label className="block mb-1 text-sm">Completed</label>
+            <Select
+  value={String(formData.isCompleted)} // Ensures value is always a string ("true" | "false")
+  onValueChange={(value) => handleSelectChange("isCompleted", value === "true")} // Converts to boolean
+>
+  <SelectTrigger className="bg-background/10 border-border text-foreground">
+    <SelectValue>{formData.isCompleted ? "Completed" : "Not Completed"}</SelectValue>
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="false">Not Completed</SelectItem>
+    <SelectItem value="true">Completed</SelectItem>
+  </SelectContent>
+</Select>
           </div>
         </TabsContent>
       </Tabs>

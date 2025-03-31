@@ -15,13 +15,7 @@ model Event {
   date          String
   color         String
   description   String?
-  location      String?
-  attendees     String[]
-  organizer     String
   isCompleted   Boolean   @default(false)
-  tags          String[]
-  githubRepo    String?
-  codeLanguage  String?
   priority      String?
   reminderTime  Int?
   notificationSent Boolean @default(false)

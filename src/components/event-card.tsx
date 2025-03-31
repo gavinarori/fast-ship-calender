@@ -3,7 +3,7 @@
 import { useState, useRef } from "react"
 import type { Event } from "@/lib/models"
 import { formatTime, getPriorityColor } from "@/lib/utils"
-import { Code, Tag, Clock, Grip } from "lucide-react"
+import { Clock, Grip } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useDrag } from "@/hooks/use-drag"
 
@@ -41,7 +41,7 @@ export default function EventCard({ event, onClick, onDragEnd, timeSlotHeight, s
   const { handleMouseDown } = useDrag({
     ref: cardRef as any,
     onDragStart: () => setIsDragging(true),
-    onDragEnd: (offsetY: number) => {
+    onDragEnd: (offsetY) => {
       setIsDragging(false)
 
       // Calculate new times based on drag offset
@@ -78,6 +78,7 @@ export default function EventCard({ event, onClick, onDragEnd, timeSlotHeight, s
         `absolute left-1 right-1 rounded-md p-2 text-white text-xs shadow-md cursor-pointer transition-all`,
         eventColor,
         isDragging ? "opacity-70 shadow-lg z-50" : "hover:translate-y-[-2px] hover:shadow-lg",
+        event.isCompleted ? "opacity-60" : "",
       )}
       style={{
         top: `${top}px`,
@@ -97,20 +98,11 @@ export default function EventCard({ event, onClick, onDragEnd, timeSlotHeight, s
         <span className="text-[10px]">{formatTime(event.startTime)}</span>
       </div>
 
-      {event.codeLanguage && (
-        <div className="flex items-center gap-1 mt-1">
-          <Code className="h-3 w-3" />
-          <span className="text-[10px] truncate">{event.codeLanguage}</span>
-        </div>
-      )}
+      {event.description && <div className="mt-1 text-[10px] text-white/80 line-clamp-2">{event.description}</div>}
 
-      {event.tags && event.tags.length > 0 && (
-        <div className="flex items-center gap-1 mt-1">
-          <Tag className="h-3 w-3" />
-          <span className="text-[10px] truncate">
-            {event.tags[0]}
-            {event.tags.length > 1 ? ` +${event.tags.length - 1}` : ""}
-          </span>
+      {event.priority && (
+        <div className="absolute bottom-1 right-1 text-[8px] font-medium bg-white/20 px-1 rounded">
+          {event.priority}
         </div>
       )}
     </div>

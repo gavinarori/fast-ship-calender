@@ -40,10 +40,6 @@ export default function EventForm({ event, onSubmit, onCancel }: EventFormProps)
     date: "",
     color: "bg-blue-500",
     description: "",
-    location: "",
-    attendees: [],
-    organizer: "You",
-    tags: [],
     priority: "medium",
     reminderTime: 15,
   });
@@ -76,39 +72,9 @@ export default function EventForm({ event, onSubmit, onCancel }: EventFormProps)
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const addAttendee = () => {
-    if (attendeeInput.trim() && !formData.attendees.includes(attendeeInput.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        attendees: [...prev.attendees, attendeeInput.trim()]
-      }));
-      setAttendeeInput("");
-    }
-  };
 
-  const removeAttendee = (attendee: string) => {
-    setFormData(prev => ({
-      ...prev,
-      attendees: prev.attendees.filter(a => a !== attendee)
-    }));
-  };
 
-  const addTag = () => {
-    if (tagInput.trim() && !formData.tags?.includes(tagInput.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        tags: [...(prev.tags || []), tagInput.trim()]
-      }));
-      setTagInput("");
-    }
-  };
 
-  const removeTag = (tag: string) => {
-    setFormData(prev => ({
-      ...prev,
-      tags: prev.tags?.filter(t => t !== tag)
-    }));
-  };
 
   const validateForm = () => {
     if (!formData.title) {
@@ -234,16 +200,7 @@ export default function EventForm({ event, onSubmit, onCancel }: EventFormProps)
         </div>
       </div>
       
-      <div>
-        <label className="block mb-1">Location</label>
-        <Input
-          name="location"
-          value={formData.location}
-          onChange={handleChange}
-          className="bg-background/10 border-border text-foreground"
-          placeholder="Location"
-        />
-      </div>
+
       
       <div>
         <label className="block mb-1">Description</label>
@@ -257,84 +214,8 @@ export default function EventForm({ event, onSubmit, onCancel }: EventFormProps)
         />
       </div>
       
-      <div>
-        <label className="block mb-1">Attendees</label>
-        <div className="flex gap-2">
-          <Input
-            value={attendeeInput}
-            onChange={(e) => setAttendeeInput(e.target.value)}
-            className="bg-background/10 border-border text-foreground flex-grow"
-            placeholder="Add attendee"
-            onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addAttendee())}
-          />
-          <Button type="button" onClick={addAttendee}>Add</Button>
-        </div>
-        <div className="flex flex-wrap gap-2 mt-2">
-          {formData.attendees.map((attendee, index) => (
-            <Badge key={index} variant="secondary" className="flex items-center gap-1">
-              {attendee}
-              <X className="h-3 w-3 cursor-pointer" onClick={() => removeAttendee(attendee)} />
-            </Badge>
-          ))}
-        </div>
-      </div>
+
       
-      {/* Development-specific fields */}
-      <div>
-        <label className="block mb-1">GitHub Repository</label>
-        <div className="relative">
-          <Github className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground/70 h-4 w-4" />
-          <Input
-            name="githubRepo"
-            value={formData.githubRepo || ""}
-            onChange={handleChange}
-            className="bg-background/10 border-border text-foreground pl-10"
-            placeholder="username/repository"
-          />
-        </div>
-      </div>
-      
-      <div>
-        <label className="block mb-1">Programming Language</label>
-        <div className="relative">
-          <Code className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground/70 h-4 w-4" />
-          <Select
-            value={formData.codeLanguage || ""}
-            onValueChange={(value) => handleSelectChange("codeLanguage", value)}
-          >
-            <SelectTrigger className="bg-background/10 border-border text-foreground pl-10">
-              <SelectValue placeholder="Select language" />
-            </SelectTrigger>
-            <SelectContent>
-              {codeLanguages.map((lang) => (
-                <SelectItem key={lang} value={lang}>{lang}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      
-      <div>
-        <label className="block mb-1">Tags</label>
-        <div className="flex gap-2">
-          <Input
-            value={tagInput}
-            onChange={(e) => setTagInput(e.target.value)}
-            className="bg-background/10 border-border text-foreground flex-grow"
-            placeholder="Add tag"
-            onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-          />
-          <Button type="button" onClick={addTag}>Add</Button>
-        </div>
-        <div className="flex flex-wrap gap-2 mt-2">
-          {formData.tags?.map((tag, index) => (
-            <Badge key={index} variant="outline" className="flex items-center gap-1">
-              {tag}
-              <X className="h-3 w-3 cursor-pointer" onClick={() => removeTag(tag)} />
-            </Badge>
-          ))}
-        </div>
-      </div>
       
       <div className="grid grid-cols-2 gap-4">
         <div>

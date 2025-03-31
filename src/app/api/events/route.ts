@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
 
 // GET all events
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const events = await prisma.event.findMany({
       orderBy: {
-        date: 'asc'
-      }
+        date: "asc",
+      },
     })
 
     return NextResponse.json(events)
@@ -18,7 +18,7 @@ export async function GET() {
 }
 
 // POST new event
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const event = await request.json()
 
@@ -43,17 +43,11 @@ export async function POST(request: Request) {
         date: event.date,
         color: event.color,
         description: event.description || "",
-        location: event.location || "",
-        attendees: event.attendees || [],
-        organizer: event.organizer || "You",
         isCompleted: event.isCompleted || false,
-        tags: event.tags || [],
-        githubRepo: event.githubRepo || null,
-        codeLanguage: event.codeLanguage || null,
         priority: event.priority || null,
         reminderTime: event.reminderTime || null,
-        notificationSent: event.notificationSent || false
-      }
+        notificationSent: event.notificationSent || false,
+      },
     })
 
     return NextResponse.json(newEvent, { status: 201 })
@@ -62,3 +56,4 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to create event" }, { status: 500 })
   }
 }
+

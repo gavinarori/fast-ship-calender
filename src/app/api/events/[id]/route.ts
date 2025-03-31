@@ -2,12 +2,12 @@ import { NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
 
 // GET a specific event
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = params.id
+    const { id } = await params
 
     const event = await prisma.event.findUnique({
-      where: { id }
+      where: { id },
     })
 
     if (!event) {
@@ -22,24 +22,22 @@ export async function GET(request: Request, { params }: { params: { id: string }
 }
 
 // PUT (update) an event
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = params.id
+    const { id } = await params
     const updates = await request.json()
 
-    // Check if event is in the past if date or time is being updated
     if (updates.date || updates.startTime) {
       const existingEvent = await prisma.event.findUnique({
-        where: { id }
+        where: { id },
       })
-      
+
       if (!existingEvent) {
         return NextResponse.json({ error: "Event not found" }, { status: 404 })
       }
-      
+
       const eventDate = updates.date || existingEvent.date
       const eventTime = updates.startTime || existingEvent.startTime
-
       const eventStart = new Date(`${eventDate}T${eventTime}`)
       const now = new Date()
 
@@ -50,7 +48,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     const updatedEvent = await prisma.event.update({
       where: { id },
-      data: updates
+      data: updates,
     })
 
     return NextResponse.json(updatedEvent)
@@ -61,12 +59,12 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 }
 
 // DELETE an event
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = params.id
+    const { id } = await params
 
     await prisma.event.delete({
-      where: { id }
+      where: { id },
     })
 
     return NextResponse.json({ success: true })
@@ -75,3 +73,4 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     return NextResponse.json({ error: "Failed to delete event" }, { status: 500 })
   }
 }
+

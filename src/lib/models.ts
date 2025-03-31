@@ -5,14 +5,8 @@ export interface Event {
   endTime: string
   date: string // YYYY-MM-DD format
   color: string
-  description: string
-  location: string
-  attendees: string[]
-  organizer: string
+  description?: string
   isCompleted?: boolean
-  tags?: string[]
-  githubRepo?: string
-  codeLanguage?: string
   priority?: "low" | "medium" | "high"
   reminderTime?: number // minutes before event
   notificationSent?: boolean

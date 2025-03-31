@@ -46,7 +46,7 @@ export default function ReminderService({ events }: ReminderServiceProps) {
         setPlaySound(true)
 
         // Mark these events as notified
-        upcomingEvents.forEach(async (event:any) => {
+        upcomingEvents.forEach(async (event) => {
           if (event.id) {
             try {
               await fetch(`/api/events/${event.id}`, {
@@ -85,7 +85,7 @@ export default function ReminderService({ events }: ReminderServiceProps) {
   }
 
   const dismissNotification = (eventId: string) => {
-    setNotifications((prev) => prev.filter((n:any) => n.id !== eventId))
+    setNotifications((prev) => prev.filter((n) => n.id !== eventId))
   }
 
   if (notifications.length === 0) {
@@ -97,7 +97,7 @@ export default function ReminderService({ events }: ReminderServiceProps) {
       <NotificationSound play={playSound} onEnded={handleSoundEnded} />
 
       <div className="fixed bottom-8 left-8 z-20 space-y-4">
-        {notifications.map((event:any) => (
+        {notifications.map((event) => (
           <div key={event.id} className={`${event.color} p-4 rounded-lg shadow-lg max-w-sm animate-fade-in`}>
             <div className="flex justify-between items-start">
               <h4 className="font-bold text-white">{event.title}</h4>
@@ -108,7 +108,6 @@ export default function ReminderService({ events }: ReminderServiceProps) {
             <p className="text-white/90 text-sm mt-1">
               Starting in {event.reminderTime} minutes at {event.startTime}
             </p>
-            <p className="text-white/80 text-xs mt-2">{event.location}</p>
           </div>
         ))}
       </div>

@@ -32,10 +32,6 @@ export default function SimpleEventForm({ onSubmit, onCancel }: SimpleEventFormP
     date: "",
     color: "bg-blue-500",
     description: "",
-    location: "",
-    attendees: [],
-    organizer: "You",
-    tags: [],
     priority: "medium",
     reminderTime: 15,
   })
@@ -84,7 +80,6 @@ export default function SimpleEventForm({ onSubmit, onCancel }: SimpleEventFormP
       setFormData((prev) => ({
         ...prev,
         color: selectedCategory.color,
-        tags: [...(prev.tags || []), selectedCategory.name],
       }))
     }
   }
@@ -195,6 +190,22 @@ export default function SimpleEventForm({ onSubmit, onCancel }: SimpleEventFormP
           placeholder="Add details (optional)"
           rows={3}
         />
+      </div>
+
+      <div>
+        <Select
+          value={formData.priority || "medium"}
+          onValueChange={(value) => setFormData((prev) => ({ ...prev, priority: value as "low" | "medium" | "high" }))}
+        >
+          <SelectTrigger className="bg-background/10 border-border text-foreground">
+            <SelectValue placeholder="Select priority" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="low">Low Priority</SelectItem>
+            <SelectItem value="medium">Medium Priority</SelectItem>
+            <SelectItem value="high">High Priority</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="flex justify-end gap-3 pt-4">

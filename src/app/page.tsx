@@ -14,6 +14,8 @@ import CalendarSkeleton from "@/components/calendar-skeleton"
 import type { Event } from "@/lib/models"
 import { format, addDays, isToday } from "date-fns"
 import { Button } from "@/components/ui/button"
+import clsx from 'clsx';
+import { FolderCode } from 'lucide-react';
 
 export default function Home() {
   const [events, setEvents] = useState<Event[]>([])
@@ -210,7 +212,14 @@ export default function Home() {
       {/* Navigation */}
       <header className="border-b border-border border-dotted flex items-center justify-between px-4 lg:px-8 py-4">
         <div className="flex items-center gap-4 lg:ml-64">
-          <span className="text-xl font-semibold">Dev Calendar</span>
+        <div
+      className={clsx(
+        'flex flex-none items-center h-[40px] w-[40px] rounded-xl justify-center border border-neutral-200 bg-green-600 dark:border-neutral-700 ',
+      )}
+    >
+      <FolderCode />
+    </div>
+          <span className="text-xl font-semibold">Dev Mode Calendar</span>
         </div>
 
         <div className="flex items-center gap-4 ml-auto">

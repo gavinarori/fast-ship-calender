@@ -20,6 +20,7 @@ import ProjectDashboard from "@/components/project-dashboard"
 import { useSession } from "next-auth/react"
 import { toast } from "sonner"
 
+
 export default function Home() {
   const { status } = useSession()
   const [events, setEvents] = useState<Event[]>([])

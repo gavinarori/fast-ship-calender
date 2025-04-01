@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import clsx from 'clsx';
+import { FolderCode } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: string
@@ -32,7 +34,13 @@ export default function Header({ activeTab, onTabChange, onGithubClick }: Header
       <div className="flex items-center gap-4">
         {/* Logo and App Name */}
         <div className="flex items-center gap-2">
-          <Calendar className="h-6 w-6 text-primary" />
+        <div
+      className={clsx(
+        'flex flex-none items-center h-[40px] w-[40px] rounded-xl justify-center border border-neutral-200 bg-green-600 dark:border-neutral-700 ',
+      )}
+    >
+      <FolderCode />
+    </div>
           <span className="text-xl font-semibold hidden sm:inline">Dev Calendar</span>
         </div>
 

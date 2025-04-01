@@ -1,6 +1,4 @@
 @import "tailwindcss";
-@import "tw-animate-css";
-@import 'tw-animate-css';
 
 :root {
   --background: #ffffff;
@@ -112,6 +110,25 @@ body {
     background-image: linear-gradient(currentColor 1px, transparent 1px),
       linear-gradient(to right, currentColor 1px, transparent 1px);
     background-size: 20px 20px;
+  }
+
+  /* Custom scrollbar styles - invisible but functional */
+  .scrollbar-thin {
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+    display: none; /* Chrome, Safari, Edge */
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: transparent;
   }
 }
 

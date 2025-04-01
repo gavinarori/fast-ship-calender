@@ -83,6 +83,7 @@ export default function EventCard({ event, onClick, onDragEnd, timeSlotHeight, s
       style={{
         top: `${top}px`,
         height: `${height}px`,
+        maxWidth: "calc(100% - 8px)",
       }}
       onClick={() => !isDragging && onClick()}
     >

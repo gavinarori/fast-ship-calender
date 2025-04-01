@@ -19,6 +19,6 @@ export default function NotificationSound({ play, onEnded }: NotificationSoundPr
     }
   }, [play])
 
-  return <audio ref={audioRef} src="/notification.mp3" onEnded={onEnded} />
+  return <audio ref={audioRef} src="/mixkit-bell-notification-933.wav" onEnded={onEnded} />
 }
 

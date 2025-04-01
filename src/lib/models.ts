@@ -10,5 +10,8 @@ export interface Event {
   priority?: "low" | "medium" | "high"
   reminderTime?: number // minutes before event
   notificationSent?: boolean
+  githubId?: string
+  githubUrl?: string
+  repository?: string
 }
 

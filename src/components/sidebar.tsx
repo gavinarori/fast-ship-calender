@@ -7,6 +7,7 @@ import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import type { Event } from "@/lib/models"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface SidebarProps {
   currentDate: Date
@@ -19,6 +20,7 @@ interface SidebarProps {
 export default function Sidebar({ currentDate, setCurrentDate, onCreateEvent, events, className }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [currentViewMonth, setCurrentViewMonth] = useState(new Date(currentDate))
+  const [activeTab, setActiveTab] = useState("calendar")
   const currentMonth = format(currentViewMonth, "MMMM yyyy")
 
   // Reset view month when current date changes significantly
@@ -78,12 +80,111 @@ export default function Sidebar({ currentDate, setCurrentDate, onCreateEvent, ev
 
   const sidebarContent = (
     <div className="h-full flex flex-col justify-between">
-      <div>
+      <div className="flex-1 overflow-y-auto pr-1 scrollbar-thin">
         <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold">Dev Calendar</h2>
           <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setIsOpen(false)}>
             <X className="h-5 w-5" />
           </Button>
         </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <TabsList className="grid grid-cols-2 w-full">
+            <TabsTrigger value="calendar">Calendar</TabsTrigger>
+            <TabsTrigger value="projects">Projects</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="calendar" className="mt-0 max-h-[calc(100vh-16rem)] overflow-y-auto scrollbar-thin">
+            {/* Mini Calendar */}
+            <div className="mb-6 border-b border-dotted border-border pb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-medium">{currentMonth}</h3>
+                <div className="flex gap-1">
+                  <Button variant="ghost" size="icon" className="p-1 rounded-full" onClick={goToPreviousMonth}>
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="p-1 rounded-full" onClick={goToNextMonth}>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-7 gap-1 text-center">
+                {["S", "M", "T", "W", "T", "F", "S"].map((day, i) => (
+                  <div key={i} className="text-xs text-muted-foreground font-medium py-1">
+                    {day}
+                  </div>
+                ))}
+
+                {miniCalendarDays.map((day, i) => {
+                  if (!day) return <div key={i} className="invisible w-7 h-7"></div>
+
+                  const date = new Date(currentViewMonth.getFullYear(), currentViewMonth.getMonth(), day)
+                  const isCurrentDay = isSameDay(date, currentDate)
+                  const dayHasEvents = hasEvents(day)
+
+                  return (
+                    <div
+                      key={i}
+                      className={cn(
+                        "text-xs rounded-full w-7 h-7 flex items-center justify-center cursor-pointer relative",
+                        isCurrentDay ? "bg-primary text-primary-foreground" : "hover:bg-muted",
+                      )}
+                      onClick={() => selectDay(day)}
+                    >
+                      {day}
+                      {dayHasEvents && (
+                        <span className="absolute bottom-0.5 left-1/2 transform -translate-x-1/2 w-1 h-1 rounded-full bg-primary"></span>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* My Calendars */}
+            <div>
+              <h3 className="font-medium mb-3">My calendars</h3>
+              <div className="space-y-3">
+                {myCalendars.map((cal, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className={`w-3 h-3 rounded-sm ${cal.color}`}></div>
+                    <div className="flex items-center gap-2 text-sm">
+                      {cal.icon}
+                      <span>{cal.name}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="projects" className="mt-0 max-h-[calc(100vh-16rem)] overflow-y-auto scrollbar-thin">
+            <div className="space-y-4">
+              <h3 className="font-medium mb-3">Recent Projects</h3>
+              <div className="space-y-2">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="p-2 rounded-md hover:bg-muted cursor-pointer">
+                    <div className="flex items-center gap-2">
+                      <Github className="h-4 w-4" />
+                      <span className="text-sm font-medium">Project {i}</span>
+                    </div>
+                    <div className="mt-1 h-1.5 bg-muted-foreground/20 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-primary rounded-full"
+                        style={{ width: `${Math.floor(Math.random() * 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <Button variant="outline" className="w-full text-sm" size="sm">
+                View All Projects
+              </Button>
+            </div>
+          </TabsContent>
+        </Tabs>
 
         <Button
           className="mb-6 flex items-center justify-center gap-2 rounded-full px-4 py-3 w-full"
@@ -95,69 +196,6 @@ export default function Sidebar({ currentDate, setCurrentDate, onCreateEvent, ev
           <Plus className="h-5 w-5" />
           <span>Create Event</span>
         </Button>
-
-        {/* Mini Calendar */}
-        <div className="mb-6 border-b border-dotted border-border pb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-medium">{currentMonth}</h3>
-            <div className="flex gap-1">
-              <Button variant="ghost" size="icon" className="p-1 rounded-full" onClick={goToPreviousMonth}>
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" className="p-1 rounded-full" onClick={goToNextMonth}>
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-7 gap-1 text-center">
-            {["S", "M", "T", "W", "T", "F", "S"].map((day, i) => (
-              <div key={i} className="text-xs text-muted-foreground font-medium py-1">
-                {day}
-              </div>
-            ))}
-
-            {miniCalendarDays.map((day, i) => {
-              if (!day) return <div key={i} className="invisible w-7 h-7"></div>
-
-              const date = new Date(currentViewMonth.getFullYear(), currentViewMonth.getMonth(), day)
-              const isCurrentDay = isSameDay(date, currentDate)
-              const dayHasEvents = hasEvents(day)
-
-              return (
-                <div
-                  key={i}
-                  className={cn(
-                    "text-xs rounded-full w-7 h-7 flex items-center justify-center cursor-pointer relative",
-                    isCurrentDay ? "bg-primary text-primary-foreground" : "hover:bg-muted",
-                  )}
-                  onClick={() => selectDay(day)}
-                >
-                  {day}
-                  {dayHasEvents && (
-                    <span className="absolute bottom-0.5 left-1/2 transform -translate-x-1/2 w-1 h-1 rounded-full bg-primary"></span>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* My Calendars */}
-        <div>
-          <h3 className="font-medium mb-3">My calendars</h3>
-          <div className="space-y-3">
-            {myCalendars.map((cal, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <div className={`w-3 h-3 rounded-sm ${cal.color}`}></div>
-                <div className="flex items-center gap-2 text-sm">
-                  {cal.icon}
-                  <span>{cal.name}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* Create button at bottom */}
@@ -177,7 +215,7 @@ export default function Sidebar({ currentDate, setCurrentDate, onCreateEvent, ev
   // For desktop: render directly
   return (
     <>
-      {/* Mobile trigger */}
+      {/* Mobile trigger - positioned to not overlap with Today button */}
       <Button
         variant="ghost"
         size="icon"
